@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TOEIC 多益單字複習工具 - TEST 4</title>
+    <title>TOEIC 多益單字學習與測驗</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: #f1f5f9;
@@ -15,8 +15,8 @@
         .sidebar-bg {
             background-color: #E0E0E0;
         }
-        /* 字卡維持白色 */
-        .word-card {
+        /* 字卡與測驗卡片維持白色 */
+        .word-card, .quiz-card {
             background-color: #ffffff;
             transition: all 0.2s ease;
         }
@@ -32,18 +32,48 @@
             opacity: 0;
             user-select: none;
         }
-        /* 選單啟動狀態樣式 */
-        .sidebar-item-active {
+        /* 選單啟動狀態樣式 (複習模式 - 靛藍色) */
+        .sidebar-item-active-review {
             background-color: #cbd5e1;
             border-left: 4px solid #6366f1;
             color: #1e293b;
+        }
+        /* 選單啟動狀態樣式 (測驗模式 - 藍色) */
+        .sidebar-item-active-quiz {
+            background-color: #cbd5e1;
+            border-left: 4px solid #3b82f6; /* Blue-500 */
+            color: #1e293b;
+        }
+        /* 測驗選項按鈕特效 */
+        .quiz-option {
+            transition: all 0.15s ease-in-out;
+        }
+        .quiz-option:hover:not(:disabled) {
+            transform: scale(1.01);
+            background-color: #f8fafc;
+            border-color: #94a3b8;
+        }
+        .quiz-option:active:not(:disabled) {
+            transform: scale(0.99);
+        }
+        .quiz-option.correct {
+            background-color: #dcfce7 !important; /* green-100 */
+            border-color: #22c55e !important; /* green-500 */
+            color: #166534 !important; /* green-800 */
+            pointer-events: none;
+        }
+        .quiz-option.wrong {
+            background-color: #fee2e2 !important; /* red-100 */
+            border-color: #ef4444 !important; /* red-500 */
+            color: #991b1b !important; /* red-800 */
+            pointer-events: none;
         }
     </style>
 </head>
 <body class="flex flex-col md:flex-row min-h-screen">
 
     <!-- Left Sidebar Menu -->
-    <aside class="w-full md:w-64 sidebar-bg text-slate-800 flex-shrink-0 shadow-sm border-r border-slate-300">
+    <aside class="w-full md:w-64 sidebar-bg text-slate-800 flex-shrink-0 shadow-sm border-r border-slate-300 md:h-screen sticky top-0 overflow-y-auto">
         <div class="p-6">
             <h2 class="text-xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
                 <span class="bg-indigo-600 p-1.5 rounded">
@@ -52,23 +82,42 @@
                 多益題庫
             </h2>
         </div>
-        <nav class="mt-2 px-3">
-            <div class="space-y-1">
-                <a href="#" class="sidebar-item-active group flex items-center px-3 py-3 text-sm font-bold rounded-md">
-                    <span class="mr-3">📝</span>
-                    TEST 4 (目前)
-                </a>
-                <div class="px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider mt-6">
-                    未來擴充
+        
+        <nav class="mt-2 px-3 pb-8">
+            <!-- 複習區塊 -->
+            <div class="space-y-1 mb-8">
+                <div class="px-3 py-2 text-xs font-bold text-indigo-700 uppercase tracking-wider mb-1 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    單字複習
                 </div>
-                <a href="#" class="group flex items-center px-3 py-3 text-sm font-medium rounded-md text-slate-500 hover:bg-slate-200 transition">
+                <button onclick="switchMode('review', 'TEST 4')" id="nav-review-test4" class="sidebar-item-active-review w-full text-left group flex items-center px-3 py-3 text-sm font-bold rounded-md transition-colors">
+                    <span class="mr-3">📝</span>
+                    TEST 4
+                </button>
+                <div class="group flex items-center px-3 py-3 text-sm font-medium rounded-md text-slate-500 opacity-60">
                     <span class="mr-3">🔒</span>
                     TEST 5
-                </a>
-                <a href="#" class="group flex items-center px-3 py-3 text-sm font-medium rounded-md text-slate-500 hover:bg-slate-200 transition">
+                </div>
+            </div>
+
+            <!-- 測驗區塊 (根據截圖要求新增) -->
+            <div class="space-y-1">
+                <div class="px-3 py-2 text-xs font-bold text-blue-700 uppercase tracking-wider mb-1 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    單字測驗
+                </div>
+                <button onclick="switchMode('quiz', 'TEST 4')" id="nav-quiz-test4" class="w-full text-left group flex items-center px-3 py-3 text-sm font-medium rounded-md text-slate-600 hover:bg-slate-200 transition-colors">
+                    <span class="mr-3">🎮</span>
+                    TEST 4
+                </button>
+                <div class="group flex items-center px-3 py-3 text-sm font-medium rounded-md text-slate-500 opacity-60">
+                    <span class="mr-3">🔒</span>
+                    TEST 5
+                </div>
+                <div class="group flex items-center px-3 py-3 text-sm font-medium rounded-md text-slate-500 opacity-60">
                     <span class="mr-3">🔒</span>
                     TEST 6
-                </a>
+                </div>
             </div>
         </nav>
         <div class="mt-auto p-6 text-xs text-slate-400">
@@ -79,39 +128,121 @@
     <!-- Main Content -->
     <main class="flex-1 p-4 md:p-8 overflow-y-auto">
         <div class="max-w-4xl mx-auto">
-            <!-- Header -->
-            <header class="mb-8 text-left border-b border-slate-200 pb-6">
-                <div class="flex items-center gap-2 text-indigo-600 font-semibold text-sm mb-1 uppercase tracking-widest">
-                    Vocabulary List
-                </div>
-                <h1 class="text-4xl font-extrabold text-slate-800 mb-2">TEST 4 多益單字複習</h1>
-            </header>
-
-            <!-- Controls -->
-            <div class="bg-white p-4 rounded-xl shadow-sm mb-6 flex flex-wrap gap-4 items-center justify-between sticky top-4 z-10 border border-slate-200">
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="toggleAll(true)" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-semibold text-sm transition shadow-sm">顯示全部</button>
-                    <button onclick="toggleAll(false)" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 font-semibold text-sm transition">全部隱藏</button>
-                    <div class="h-8 w-px bg-slate-200 mx-1 hidden sm:block"></div>
-                    <button onclick="shuffleWords()" class="px-4 py-2 border border-indigo-200 text-indigo-600 rounded-lg hover:bg-indigo-50 font-semibold text-sm transition">隨機排序</button>
-                    <button onclick="resetOrder()" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-lg hover:bg-slate-50 font-semibold text-sm transition">恢復順序</button>
-                </div>
-                <div class="relative flex-grow max-w-xs w-full md:w-auto">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            
+            <!-- ====== 模式 1：單字複習 (原有的功能) ====== -->
+            <div id="review-mode-container" class="block">
+                <!-- Header -->
+                <header class="mb-8 text-left border-b border-slate-200 pb-6">
+                    <div class="flex items-center gap-2 text-indigo-600 font-semibold text-sm mb-1 uppercase tracking-widest">
+                        Vocabulary List
                     </div>
-                    <input type="text" id="searchInput" oninput="filterWords()" placeholder="搜尋單字或詞性..." class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition">
+                    <h1 class="text-4xl font-extrabold text-slate-800 mb-2">TEST 4 多益單字複習</h1>
+                </header>
+
+                <!-- Controls -->
+                <div class="bg-white p-4 rounded-xl shadow-sm mb-6 flex flex-wrap gap-4 items-center justify-between sticky top-4 z-10 border border-slate-200">
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="toggleAll(true)" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-semibold text-sm transition shadow-sm">顯示全部</button>
+                        <button onclick="toggleAll(false)" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 font-semibold text-sm transition">全部隱藏</button>
+                        <div class="h-8 w-px bg-slate-200 mx-1 hidden sm:block"></div>
+                        <button onclick="shuffleWords()" class="px-4 py-2 border border-indigo-200 text-indigo-600 rounded-lg hover:bg-indigo-50 font-semibold text-sm transition">隨機排序</button>
+                        <button onclick="resetOrder()" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-lg hover:bg-slate-50 font-semibold text-sm transition">恢復順序</button>
+                    </div>
+                    <div class="relative flex-grow max-w-xs w-full md:w-auto">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </div>
+                        <input type="text" id="searchInput" oninput="filterWords()" placeholder="搜尋單字或詞性..." class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition">
+                    </div>
+                </div>
+
+                <!-- Word List -->
+                <div id="wordList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Cards injected here -->
                 </div>
             </div>
 
-            <!-- Word List -->
-            <div id="wordList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Cards injected here -->
+            <!-- ====== 模式 2：單字測驗 (新增的小遊戲) ====== -->
+            <div id="quiz-mode-container" class="hidden">
+                <!-- Header -->
+                <header class="mb-8 text-left border-b border-slate-200 pb-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="flex items-center gap-2 text-blue-600 font-semibold text-sm mb-1 uppercase tracking-widest">
+                                Vocabulary Quiz
+                            </div>
+                            <h1 class="text-4xl font-extrabold text-slate-800 mb-2">TEST 4 單字測驗</h1>
+                        </div>
+                        <button onclick="startQuiz()" class="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold shadow-md transition transform hover:scale-105 flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                            重新開始
+                        </button>
+                    </div>
+                </header>
+
+                <!-- 測驗進行中畫面 -->
+                <div id="quiz-active-area" class="max-w-2xl mx-auto hidden">
+                    <!-- 進度條 -->
+                    <div class="mb-6">
+                        <div class="flex justify-between text-sm font-semibold text-slate-600 mb-2">
+                            <span>進度</span>
+                            <span id="quiz-progress-text">1 / 10</span>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2.5">
+                            <div id="quiz-progress-bar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-300" style="width: 10%"></div>
+                        </div>
+                    </div>
+
+                    <!-- 題目卡片 -->
+                    <div class="quiz-card p-8 rounded-2xl shadow-md border border-slate-200 mb-6 text-center relative overflow-hidden">
+                        <div class="absolute top-4 right-4 cursor-pointer text-slate-400 hover:text-blue-500 transition" onclick="speakCurrentQuizWord()" title="聽發音">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                        </div>
+                        <p class="text-sm font-medium text-slate-500 mb-2 uppercase tracking-widest">請選擇正確的中文翻譯</p>
+                        <h2 id="quiz-question-word" class="text-4xl sm:text-5xl font-black text-slate-900 mb-8 tracking-tight py-4">
+                            Word
+                        </h2>
+
+                        <!-- 四選一按鈕區 -->
+                        <div id="quiz-options-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Options injected here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 測驗結果畫面 (包含錯題回顧) -->
+                <div id="quiz-result-area" class="max-w-3xl mx-auto hidden">
+                    <div class="bg-white p-8 rounded-2xl shadow-md border border-slate-200 text-center mb-8">
+                        <div class="inline-flex items-center justify-center w-20 h-20 bg-blue-100 text-blue-600 rounded-full mb-4">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <h2 class="text-3xl font-bold text-slate-800 mb-2">測驗完成！</h2>
+                        <p class="text-slate-600 mb-6">您的得分：<span id="quiz-score" class="text-2xl font-black text-blue-600 ml-2">0</span> / <span id="quiz-total-score" class="font-bold">0</span></p>
+                        <button onclick="startQuiz()" class="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-bold text-lg shadow-md transition">
+                            再測驗一次
+                        </button>
+                    </div>
+
+                    <!-- 錯題回顧區塊 -->
+                    <div id="wrong-answers-container" class="hidden">
+                        <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2 border-b border-slate-200 pb-2">
+                            <span class="text-red-500">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            </span>
+                            需要加強的單字 (錯題回顧)
+                        </h3>
+                        <div id="wrong-answers-list" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <!-- 錯題卡片 injected here -->
+                        </div>
+                    </div>
+                </div>
             </div>
+
         </div>
     </main>
 
     <script>
+        // --- 核心資料 ---
         const originalVocabulary = [
             { word: "institute", trans: "(n.) 機構" },
             { word: "dental coverage", trans: "(n. phr.) 牙醫保險" },
@@ -195,40 +326,67 @@
             { word: "granite", trans: "(n.) 花崗岩" },
             { word: "marble", trans: "(n.) 大理石" },
             { word: "leaflet", trans: "(n.) 傳單" },
-            { word: "piece", trans: "(n.) 件/個/塊" },
+            { word: "piece", trans: "(n.) 張/件/塊" },
             { word: "cutlery", trans: "(n.) 餐具" },
             { word: "join forces with", trans: "(v. phr.) 合作" },
             { word: "press statement", trans: "(n. phr.) 新聞聲明" },
             { word: "gathering", trans: "(n.) 集會" },
             { word: "occasion", trans: "(n.) 場合" },
-            { word: "an assortment of", trans: "(phr.) 各式樣的" },
+            { word: "an assortment of", trans: "(phr.) 各式各樣的" },
             { word: "appetizer", trans: "(n.) 開胃菜" }
         ];
 
-        let currentData = [...originalVocabulary];
+        // --- 全域與發音設定 ---
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+        }
 
         function speakWord(word) {
-            // Check if the browser supports SpeechSynthesis
             if ('speechSynthesis' in window) {
-                // Cancel any ongoing speech
                 window.speechSynthesis.cancel();
-                
                 const utterance = new SpeechSynthesisUtterance(word);
-                utterance.lang = 'en-US'; // Set language to US English
-                utterance.rate = 0.9;     // Slightly slower for better clarity
-                
-                // Select a preferred voice if available (e.g., Google US English)
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
                 const voices = window.speechSynthesis.getVoices();
-                const preferredVoice = voices.find(voice => voice.name.includes('Google US English') || voice.name.includes('English (United States)'));
-                if (preferredVoice) {
-                    utterance.voice = preferredVoice;
-                }
-
+                const preferredVoice = voices.find(v => v.name.includes('Google US English') || v.name.includes('English (United States)'));
+                if (preferredVoice) utterance.voice = preferredVoice;
                 window.speechSynthesis.speak(utterance);
-            } else {
-                console.warn('Text-to-Speech is not supported in this browser.');
             }
         }
+
+        // --- 模式切換邏輯 ---
+        function switchMode(mode, testName) {
+            const reviewBtn = document.getElementById('nav-review-test4');
+            const quizBtn = document.getElementById('nav-quiz-test4');
+            const reviewContainer = document.getElementById('review-mode-container');
+            const quizContainer = document.getElementById('quiz-mode-container');
+
+            if (mode === 'review') {
+                // UI 切換
+                reviewBtn.className = "sidebar-item-active-review w-full text-left group flex items-center px-3 py-3 text-sm font-bold rounded-md transition-colors";
+                quizBtn.className = "w-full text-left group flex items-center px-3 py-3 text-sm font-medium rounded-md text-slate-600 hover:bg-slate-200 transition-colors";
+                
+                reviewContainer.classList.remove('hidden');
+                reviewContainer.classList.add('block');
+                quizContainer.classList.remove('block');
+                quizContainer.classList.add('hidden');
+            } else if (mode === 'quiz') {
+                // UI 切換
+                quizBtn.className = "sidebar-item-active-quiz w-full text-left group flex items-center px-3 py-3 text-sm font-bold rounded-md transition-colors";
+                reviewBtn.className = "w-full text-left group flex items-center px-3 py-3 text-sm font-medium rounded-md text-slate-600 hover:bg-slate-200 transition-colors";
+                
+                reviewContainer.classList.remove('block');
+                reviewContainer.classList.add('hidden');
+                quizContainer.classList.remove('hidden');
+                quizContainer.classList.add('block');
+                
+                // 進入測驗模式自動開始新的一局
+                startQuiz();
+            }
+        }
+
+        // ====== 模式 1：複習模式功能 ======
+        let currentData = [...originalVocabulary];
 
         function renderWords() {
             const listElement = document.getElementById('wordList');
@@ -241,14 +399,14 @@
                     <div class="flex-grow">
                         <h3 class="text-lg font-semibold text-slate-900">${item.word}</h3>
                         <div class="mt-1 h-6 overflow-hidden">
-                            <p id="trans-${index}" class="translation-text text-indigo-700 font-bold hidden-text">
+                            <p id="trans-${index}" class="translation-text text-indigo-700 font-bold hidden-text text-sm">
                                 ${item.trans}
                             </p>
                         </div>
                     </div>
                     <div class="flex flex-col gap-2 ml-4">
                         <button onclick="speakWord('${item.word.replace(/'/g, "\\'")}')" class="p-2 text-xs bg-slate-50 hover:bg-indigo-100 text-indigo-600 rounded-lg border border-slate-200 transition-all uppercase tracking-wider font-bold shadow-sm flex items-center justify-center gap-1" title="聽發音">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
                             發音
                         </button>
                         <button onclick="toggleSingle(${index})" class="p-2 text-xs bg-slate-50 hover:bg-indigo-600 hover:text-white text-slate-500 rounded-lg border border-slate-200 transition-all uppercase tracking-wider font-bold shadow-sm">
@@ -260,46 +418,164 @@
             });
         }
 
-        // Some browsers load voices asynchronously, this ensures they are available
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.onvoiceschanged = () => {
-                // Just to trigger loading
-                window.speechSynthesis.getVoices();
-            };
+        function toggleSingle(index) { document.getElementById(`trans-${index}`).classList.toggle('hidden-text'); }
+        function toggleAll(show) { document.querySelectorAll('.translation-text').forEach(el => show ? el.classList.remove('hidden-text') : el.classList.add('hidden-text')); }
+        function shuffleWords() { currentData.sort(() => Math.random() - 0.5); renderWords(); }
+        function resetOrder() { 
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            currentData = term ? originalVocabulary.filter(i => i.word.toLowerCase().includes(term) || i.trans.toLowerCase().includes(term)) : [...originalVocabulary];
+            renderWords(); 
+        }
+        function filterWords() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            currentData = originalVocabulary.filter(i => i.word.toLowerCase().includes(term) || i.trans.toLowerCase().includes(term));
+            renderWords();
         }
 
-        function toggleSingle(index) {
-            document.getElementById(`trans-${index}`).classList.toggle('hidden-text');
+        // 初始化複習模式
+        renderWords();
+
+        // ====== 模式 2：測驗小遊戲功能 ======
+        let quizQueue = [];
+        let currentQuizIndex = 0;
+        let score = 0;
+        let wrongAnswers = []; // 紀錄錯題 [{word: '...', trans: '...', userChoice: '...'}]
+        let isAnswered = false;
+
+        function startQuiz() {
+            // 重設狀態
+            quizQueue = [...originalVocabulary].sort(() => Math.random() - 0.5); // 打亂題庫
+            currentQuizIndex = 0;
+            score = 0;
+            wrongAnswers = [];
+            isAnswered = false;
+
+            // 切換 UI 顯示區塊
+            document.getElementById('quiz-result-area').classList.add('hidden');
+            document.getElementById('quiz-active-area').classList.remove('hidden');
+            document.getElementById('wrong-answers-container').classList.add('hidden');
+            
+            document.getElementById('quiz-total-score').innerText = quizQueue.length;
+
+            loadNextQuestion();
         }
 
-        function toggleAll(show) {
-            document.querySelectorAll('.translation-text').forEach(el => {
-                show ? el.classList.remove('hidden-text') : el.classList.add('hidden-text');
+        function loadNextQuestion() {
+            if (currentQuizIndex >= quizQueue.length) {
+                showQuizResult();
+                return;
+            }
+
+            isAnswered = false;
+            const currentItem = quizQueue[currentQuizIndex];
+            
+            // 更新進度與題目
+            document.getElementById('quiz-progress-text').innerText = `${currentQuizIndex + 1} / ${quizQueue.length}`;
+            document.getElementById('quiz-progress-bar').style.width = `${((currentQuizIndex) / quizQueue.length) * 100}%`;
+            document.getElementById('quiz-question-word').innerText = currentItem.word;
+            
+            // 產生 4 個選項 (1 正確, 3 隨機錯誤)
+            let options = [currentItem];
+            let pool = originalVocabulary.filter(v => v.word !== currentItem.word);
+            pool.sort(() => Math.random() - 0.5); // 打亂備選池
+            options.push(pool[0], pool[1], pool[2]); // 取前三個當干擾選項
+            options.sort(() => Math.random() - 0.5); // 將四個選項打亂
+
+            const optionsGrid = document.getElementById('quiz-options-grid');
+            optionsGrid.innerHTML = ''; // 清空舊選項
+
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "quiz-option w-full p-4 md:p-5 text-left border-2 border-slate-200 rounded-xl font-semibold text-slate-700 bg-white shadow-sm hover:shadow-md text-base md:text-lg focus:outline-none";
+                btn.innerText = opt.trans;
+                btn.onclick = () => handleAnswer(opt, currentItem, btn, optionsGrid);
+                optionsGrid.appendChild(btn);
             });
         }
 
-        function shuffleWords() {
-            currentData.sort(() => Math.random() - 0.5);
-            renderWords();
+        function speakCurrentQuizWord() {
+            const word = document.getElementById('quiz-question-word').innerText;
+            speakWord(word);
         }
 
-        function resetOrder() {
-            const term = document.getElementById('searchInput').value.toLowerCase();
-            currentData = term ? 
-                originalVocabulary.filter(i => i.word.toLowerCase().includes(term) || i.trans.toLowerCase().includes(term)) : 
-                [...originalVocabulary];
-            renderWords();
+        function handleAnswer(selectedItem, correctItem, clickedBtn, gridElement) {
+            if (isAnswered) return; // 避免重複點擊
+            isAnswered = true;
+
+            const buttons = gridElement.querySelectorAll('button');
+            
+            if (selectedItem.word === correctItem.word) {
+                // 答對
+                clickedBtn.classList.add('correct');
+                score++;
+            } else {
+                // 答錯
+                clickedBtn.classList.add('wrong');
+                // 找出正確的按鈕並標示為綠色
+                buttons.forEach(btn => {
+                    if (btn.innerText === correctItem.trans) {
+                        btn.classList.add('correct');
+                    }
+                });
+                // 紀錄錯題
+                wrongAnswers.push({
+                    word: correctItem.word,
+                    trans: correctItem.trans,
+                    userChoice: selectedItem.trans
+                });
+            }
+
+            // 停頓 1.2 秒後進入下一題
+            setTimeout(() => {
+                currentQuizIndex++;
+                loadNextQuestion();
+            }, 1200);
         }
 
-        function filterWords() {
-            const term = document.getElementById('searchInput').value.toLowerCase();
-            currentData = originalVocabulary.filter(i => 
-                i.word.toLowerCase().includes(term) || i.trans.toLowerCase().includes(term)
-            );
-            renderWords();
+        function showQuizResult() {
+            document.getElementById('quiz-active-area').classList.add('hidden');
+            const resultArea = document.getElementById('quiz-result-area');
+            resultArea.classList.remove('hidden');
+
+            // 滿分進度條
+            document.getElementById('quiz-progress-bar').style.width = `100%`;
+            document.getElementById('quiz-score').innerText = score;
+
+            // 處理錯題清單
+            const wrongContainer = document.getElementById('wrong-answers-container');
+            const wrongList = document.getElementById('wrong-answers-list');
+            wrongList.innerHTML = '';
+
+            if (wrongAnswers.length > 0) {
+                wrongContainer.classList.remove('hidden');
+                wrongAnswers.forEach(err => {
+                    const el = document.createElement('div');
+                    el.className = "bg-white p-4 rounded-xl border border-red-200 shadow-sm flex flex-col items-start";
+                    el.innerHTML = `
+                        <div class="flex items-center gap-2 mb-1 w-full justify-between">
+                            <span class="text-lg font-bold text-slate-900">${err.word}</span>
+                            <button onclick="speakWord('${err.word.replace(/'/g, "\\'")}')" class="text-slate-400 hover:text-blue-500">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                            </button>
+                        </div>
+                        <div class="text-sm">
+                            <span class="text-green-600 font-bold flex items-center gap-1 mb-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                ${err.trans}
+                            </span>
+                            <span class="text-red-400 text-xs line-through ml-5">
+                                您選了：${err.userChoice}
+                            </span>
+                        </div>
+                    `;
+                    wrongList.appendChild(el);
+                });
+            } else {
+                wrongContainer.classList.add('hidden');
+                // 滿分特效可以加在這裡
+            }
         }
 
-        renderWords();
     </script>
 </body>
 </html>
